@@ -5,6 +5,7 @@ import (
 	"reflect"
 	//	"strings"
 	//"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -42,6 +43,21 @@ func Keys(m interface{}) []interface{} {
 	}
 
 	return ret
+}
+
+// 通用的对象转换
+func Conv(from interface{}, to interface{}) error {
+	j, err := json.Marshal(from)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(j, to)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 //// JSON系列
