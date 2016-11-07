@@ -1,0 +1,12 @@
+- name: name
+  type: string
+  description: this's your name
+- name: age
+  type: int
+  description: how old are you
+- name: company
+  type: string
+  description: where you work
+- name: email
+  type: email
+  description: Arbitrary key/value metadata

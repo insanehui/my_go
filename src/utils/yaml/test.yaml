@@ -1,0 +1,17 @@
+template_version: 2015-10-15
+
+description: hahah
+
+parameters:
+  name:
+    type: string
+    description: this's your name
+  age:
+    type: int
+    description: how old are you
+  company:
+    type: string
+    description: where you work
+  email:
+    type: email
+    description: Arbitrary key/value metadata
