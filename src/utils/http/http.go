@@ -9,9 +9,13 @@ import (
 	"reflect"
 	"strconv"
 
+	V "github.com/asaskevich/govalidator"
 	"github.com/serenize/snaker"
-	// V "github.com/asaskevich/govalidator"
 )
+
+func init() {
+	V.SetFieldsRequiredByDefault(true) // 这是validator常用的设置
+}
 
 // 设置http头的方法
 func Json(w http.ResponseWriter) {
@@ -48,7 +52,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 	for i := 0; i < v.NumField(); i++ {
 		fieldInfo := v.Type().Field(i) // 取到字段的一些元数据, reflect.StructField
 		tag := fieldInfo.Tag           // 首先取到字段tag. reflect.StructTag
-		name := tag.Get("http")		// 取到tag中http的属性
+		name := tag.Get("http")        // 取到tag中http的属性
 		if name == "" {
 			//			name = strings.ToLower(fieldInfo.Name)
 			name = snaker.CamelToSnake(fieldInfo.Name) // 转为snaker形式的name
@@ -62,7 +66,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 		f := fields[name] // 取到当前参数对应的field字段
 
 		if !f.IsValid() {
-			continue 
+			continue
 		}
 
 		for _, value := range values {
@@ -81,7 +85,34 @@ func Unpack(req *http.Request, ptr interface{}) error {
 			}
 		}
 	}
+
 	return nil
+}
+
+// 在Unpack的基础上，用govalidator来校验参数合法性
+func Checkout(req *http.Request, ptr interface{}) error {
+
+	err := Unpack(req, ptr)
+	if err != nil {
+		return err
+	}
+
+	// ptr里已经填好值，现用validator对其进行校验
+	_, err = V.ValidateStruct(ptr)
+	if err != nil {
+		return fmt.Errorf("params invalid: %s", err.Error())
+	}
+
+	return nil
+}
+
+// 抛异常的版本
+func Checkout_(req *http.Request, ptr interface{}) {
+
+	err := Checkout(req, ptr)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // 将一个string类型填到任意类型

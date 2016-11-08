@@ -34,6 +34,16 @@ func Open(a string, b string) (*DB, error) {
 	return db, err
 }
 
+func Open_(a string, b string) *DB{
+
+	db, err := Open(a, b)
+	if err != nil {
+		log.Printf("open err: %+v", err) // 事实上，对于网络之类的问题，不会在此处抛异常
+		panic(err)
+	}
+	return db
+}
+
 // 通过sql语句查询
 func (me *DB) Query(stmtStr string, paras ...interface{}) Res {
 	var res Res
@@ -188,7 +198,7 @@ func parseKey(j interface{}, keys ...interface{}) ([]string, []interface{}) {
 	var vals []interface{}
 
 	if len(keys) == 0 {
-		keys = u.Keys(j)
+		keys = u.KeyStrs(j)
 	}
 
 	rv := reflect.ValueOf(j)

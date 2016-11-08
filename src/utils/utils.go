@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	S "github.com/fatih/structs"
 )
 
 // 小写形式
@@ -40,6 +41,26 @@ func Keys(m interface{}) []interface{} {
 			key := rkey.Interface()
 			ret = append(ret, key)
 		}
+	}
+
+	return ret
+}
+
+// 类似Keys，但key限定为string
+func KeyStrs(m interface{}) []string {
+	var ret []string
+
+	rv := reflect.ValueOf(m)
+	switch rv.Kind() {
+	case reflect.Map:
+
+		// 遍历
+		for _, rkey := range rv.MapKeys() {
+			key := rkey.String()
+			ret = append(ret, key)
+		}
+	case reflect.Struct:
+		return S.Names(m)
 	}
 
 	return ret

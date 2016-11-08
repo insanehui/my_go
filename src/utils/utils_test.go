@@ -21,6 +21,20 @@ func TestKeys(t *testing.T) {
 	}
 }
 
+// 测试struct的情况
+func TestKeys2(t *testing.T) {
+	var s  = struct {
+		Name string
+		Age int
+	}{ "haha", 30 }
+
+	keys := KeyStrs(s)
+	log.Printf("%+v", keys)
+	if !reflect.DeepEqual(keys, []string{"Name", "Age"}) {
+		t.Error()
+	}
+}
+
 func dummy() {
 	log.Printf("dummy")
 }
