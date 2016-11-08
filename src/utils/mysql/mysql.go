@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	u "utils"
+	// S "github.com/fatih/structs"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -34,7 +35,7 @@ func Open(a string, b string) (*DB, error) {
 	return db, err
 }
 
-func Open_(a string, b string) *DB{
+func Open_(a string, b string) *DB {
 
 	db, err := Open(a, b)
 	if err != nil {
@@ -115,14 +116,14 @@ func (me *DB) QryInt(q string, paras ...interface{}) int64 {
 }
 
 // 计数（与exist逻辑类型，但仅统计）
-func (me *DB) Count(table string, j interface{}, keys ...interface{}) int64 {
+func (me *DB) Count(table string, j interface{}, keys ...string) int64 {
 	q := "select count(*) from " + table + " where "
 	exprs, vals := parseKey(j, keys...)
 	q += strings.Join(exprs, " and ")
 	return me.QryInt(q, vals...)
 }
 
-func (me *DB) Exist(table string, j interface{}, keys ...interface{}) Res {
+func (me *DB) Exist(table string, j interface{}, keys ...string) Res {
 	// 为什么返回的是int，而不是uint64呢，出于以下考虑：
 	// 如果count的值超过了count的范围，这整个数据库得重新设计了
 	q := "select * from " + table + " where "
@@ -141,7 +142,7 @@ func (me *DB) Replace(table string, data interface{}) int64 {
 	return me.insert(table, data, true)
 }
 
-func (me *DB) Update(table string, data interface{}, keys ...interface{}) int64 {
+func (me *DB) Update(table string, data interface{}, keys ...string) int64 {
 	q := "update " + table + " set "
 	exprs, vals := parseKey(data)
 	q += strings.Join(exprs, ",")
@@ -154,7 +155,7 @@ func (me *DB) Update(table string, data interface{}, keys ...interface{}) int64 
 
 }
 
-func (me *DB) Set(table string, data interface{}, keys ...interface{}) int64 {
+func (me *DB) Set(table string, data interface{}, keys ...string) int64 {
 	n := me.Count(table, data, keys...)
 	if n == 0 {
 		return me.Insert(table, data)
@@ -193,19 +194,33 @@ func (me *DB) Exec(q string, args ...interface{}) int64 {
 	return ret
 }
 
-func parseKey(j interface{}, keys ...interface{}) ([]string, []interface{}) {
+func parseKey(j interface{}, keys ...string) ([]string, []interface{}) {
 	var exprs []string
 	var vals []interface{}
 
-	if len(keys) == 0 {
-		keys = u.KeyStrs(j)
-	}
+	var o interface{}
 
 	rv := reflect.ValueOf(j)
+
+	if rv.Kind() == reflect.Struct {
+
+		m := make(map[string]interface{})
+		u.Conv(j, &m)
+		log.Printf("m is: %+v", m)
+
+		rv = reflect.ValueOf(m)
+		o = m
+	} else {
+		o = j
+	}
+
+	if len(keys) == 0 {
+		keys = u.KeyStrs(o)
+	}
+
 	for _, key := range keys {
 		exprs = append(exprs, u.ToStr(key)+" = ? ")
 
-		// 取值填到参数集
 		vals = append(vals, rv.MapIndex(reflect.ValueOf(key)).Interface())
 	}
 
