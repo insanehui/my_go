@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/serenize/snaker"
+	// V "github.com/asaskevich/govalidator"
 )
 
 // 设置http头的方法
@@ -29,36 +30,46 @@ func WriteJson(w http.ResponseWriter, data interface{}) {
 }
 
 // 将http请求解析到结构体中
+// 代码摘自《go语言圣经》 ch12/params
 func Unpack(req *http.Request, ptr interface{}) error {
 
+	// 将输入参数解析到 req.Form 对象里
 	if err := req.ParseForm(); err != nil {
 		return err
 	}
 
+	// 临时存储 struct 里的数据
 	fields := make(map[string]reflect.Value)
 
-	// 这里默认 ptr 是指针类型，通过Elem方法取到其指向的值
+	// 这里默认 ptr 是指针，通过Elem方法取到其指向的值
 	v := reflect.ValueOf(ptr).Elem()
+
+	// 默认其是一个struct，遍历其所有字段
 	for i := 0; i < v.NumField(); i++ {
-		fieldInfo := v.Type().Field(i) // a reflect.StructField
-		tag := fieldInfo.Tag           // a reflect.StructTag
-		name := tag.Get("http")
+		fieldInfo := v.Type().Field(i) // 取到字段的一些元数据, reflect.StructField
+		tag := fieldInfo.Tag           // 首先取到字段tag. reflect.StructTag
+		name := tag.Get("http")		// 取到tag中http的属性
 		if name == "" {
 			//			name = strings.ToLower(fieldInfo.Name)
-			name = snaker.CamelToSnake(fieldInfo.Name)
+			name = snaker.CamelToSnake(fieldInfo.Name) // 转为snaker形式的name
 		}
-		fields[name] = v.Field(i)
+		fields[name] = v.Field(i) // 存到map里的是rv（reflect.Value）
 	}
 
+	// 遍历请求的参数
 	for name, values := range req.Form {
-		f := fields[name]
+
+		f := fields[name] // 取到当前参数对应的field字段
 
 		if !f.IsValid() {
-			continue // 忽略不认识的参数
+			continue 
 		}
+
 		for _, value := range values {
 			if f.Kind() == reflect.Slice { // 如果是数组类型，则拼成数组
-				elem := reflect.New(f.Type().Elem()).Elem()
+
+				elem := reflect.New(f.Type().Elem()).Elem() // 这里有点晦涩啊...
+
 				if err := populate(elem, value); err != nil {
 					return fmt.Errorf("%s: %v", name, err)
 				}
