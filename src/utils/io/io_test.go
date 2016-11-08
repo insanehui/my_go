@@ -6,6 +6,6 @@ import (
 )
 
 func TestReadFile(t *testing.T) {
-	data := ReadFile("io_test.go")
+	data := ReadFile_("io_test.go")
 	log.Printf("%+v", string(data))
 }

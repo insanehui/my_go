@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func ReadFile(filename string) []byte {
+func ReadFile_(filename string) []byte {
 	data, err := ioutil.ReadFile(filename)
 
 	if err != nil {
