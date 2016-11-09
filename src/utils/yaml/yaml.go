@@ -6,6 +6,9 @@ import (
 
 	"github.com/ghodss/yaml"
 	// "gopkg.in/yaml.v2"
+
+	I "utils/io"
+	// I "../io"
 )
 
 // 从文件解析一个yaml
@@ -29,5 +32,10 @@ func FromFile(filename string) interface{} {
 }
 
 // 解析到一个目的变量（可以是一个interface{}，或者struct, slice等）
-func FromFileTo(filename string, to interface{}) {
+func FromFileTo_(filename string, to interface{}) {
+	b := I.ReadFile_(filename)
+	err := yaml.Unmarshal(b, to)
+	if err != nil {
+		log.Panicf("yaml.FromFileTo err: %+v", err.Error())
+	}
 }
