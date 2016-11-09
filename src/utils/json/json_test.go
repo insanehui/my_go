@@ -129,3 +129,32 @@ func TestGroup(t *testing.T) {
 
 	log.Printf("%+v", ToJson(r))
 }
+
+func Test_str2var(t *testing.T) {
+	str := `{
+    "1": {
+        "2": [
+            {
+                "v": 1
+            },
+            {
+                "v": 2
+            }
+        ],
+        "3": [
+            {
+                "v": 2
+            }
+        ]
+    },
+    "2": {
+        "4": [
+            {
+                "v": 3
+            }
+        ]
+    }
+}`
+	log.Printf("%+v", Str2Var(str))
+
+}

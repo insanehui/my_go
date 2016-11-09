@@ -8,6 +8,7 @@ import (
 	"utils"
 )
 
+// 暂时还不知道使用自定义的I来取代interface{}会造成什么影响，先用着吧
 type I interface{}
 type Obj map[string]I
 type jres []Obj
@@ -16,6 +17,17 @@ type jres []Obj
 func ToJson(data interface{}) string {
 	j, _ := json.MarshalIndent(data, "", "    ")
 	return string(j)
+}
+
+// Unmarshal的一个简易版
+func ToVar(b []byte) interface{} {
+	var m interface{}
+	json.Unmarshal(b, &m)
+	return m
+}
+
+func Str2Var(str string) interface{} {
+	return ToVar([]byte(str))
 }
 
 // 将 a append 到 s 当中去，返回一个新的slice
