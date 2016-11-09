@@ -30,6 +30,16 @@ func Str2Var(str string) interface{} {
 	return ToVar([]byte(str))
 }
 
+// 只是 json.Unmarshal 的一个包装而已
+func To(b []byte, d interface{}) {
+	json.Unmarshal(b, d)
+}
+
+func StrTo(b string, d interface{}) {
+	To([]byte(b), d)
+}
+
+
 // 将 a append 到 s 当中去，返回一个新的slice
 func Append(s interface{}, a interface{}) []interface{} {
 	v := reflect.ValueOf(s) // 取到反射值
