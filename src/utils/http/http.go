@@ -2,6 +2,7 @@
 package http
 
 import (
+	rt "utils/runtime"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,6 +13,68 @@ import (
 	V "github.com/asaskevich/govalidator"
 	"github.com/serenize/snaker"
 )
+
+type IRetJson interface {
+	FromPanic(interface{})
+}
+
+// para为自定义的传入参数
+// ret为自定义的返回参数
+// 使用示例:
+// func test(w http.ResponseWriter, r *http.Request) {
+// 	var para struct {
+// 		// ...
+// 	}
+//	var ret struct {
+//		// ...
+//	}
+//	JsonDo(w, r, &para, &ret, func(){
+//		// 处理para和ret
+//	})
+// 	
+// }
+func JsonDo(w http.ResponseWriter, r *http.Request, para interface{}, ret IRetJson, fn func()) {
+
+	defer func() {
+		p := recover()
+		rt.Log(p)
+		ret.FromPanic(p)
+		WriteJson(w, ret)
+	}()
+
+	Checkout_(r, para)
+	fn()
+}
+
+// 与JsonDo类似，但更通用（不一定返回json）
+// end(p) 将在 defer里执行, 参数p 为panic
+// 使用示例:
+// func test(w http.ResponseWriter, r *http.Request) {
+// 	var para struct {
+// 		// ...
+// 	}
+//	var ret struct {
+//		// ...
+//	}
+//	Do(w, r, &para, &ret, func(){
+//		// 处理para和ret
+//	},func(p){
+//		// 处理panic
+//		// 返回http回应
+//	})
+// 	
+// }
+func Do(w http.ResponseWriter, r *http.Request, para interface{}, ret interface{}, fn func(), end func(p interface{})) {
+
+	defer func() {
+		p := recover()
+		rt.Log(p)
+		end(p)
+	}()
+
+	Checkout_(r, para)
+	fn()
+}
 
 func init() {
 	V.SetFieldsRequiredByDefault(true) // 这是validator常用的设置
@@ -115,7 +178,7 @@ func Checkout_(req *http.Request, ptr interface{}) {
 	}
 }
 
-// 将一个string类型填到任意类型
+// 将一个string类型填到任意类型, 给Unpack使用，同样摘自《Go语言圣经》
 func populate(v reflect.Value, value string) error {
 	switch v.Kind() {
 	case reflect.String:
@@ -146,3 +209,5 @@ func populate(v reflect.Value, value string) error {
 	}
 	return nil
 }
+
+

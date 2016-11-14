@@ -16,8 +16,9 @@ func Stack() string {
 // 将调用堆栈打日志
 func Log(p interface{}) {
 	if p != nil {
-		log.Printf("############### PANIC:[%+v] STACK BEGIN ... ################", p)
+		log.Printf(">>>>>>>>>> PANIC:[%+v] <<<<<<<<<<", p)
+		log.Printf("---------------------- STACK BEGIN ... ----------------------")
 		log.Printf(Stack())
-		log.Printf("########################## STACK END ########################")
+		log.Printf("-------------------------- STACK END ------------------------")
 	}
 }
