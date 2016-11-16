@@ -5,8 +5,8 @@ import (
 	"testing"
 	J "utils/json"
 
-	// yaml "gopkg.in/yaml.v2"
 	"github.com/ghodss/yaml"
+	gy "gopkg.in/yaml.v2"
 )
 
 func TestFromFile(t *testing.T) {
@@ -79,5 +79,44 @@ func Test2Slice(t *testing.T) {
 	log.Printf("%+v", m)
 	j := J.ToJson(m)
 	log.Printf("%+v", j)
+
+}
+
+func Test_go_yaml(t *testing.T) {
+
+	yfile := `
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: db2
+  namespace: linksame-simplest
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      name: "db"
+`
+	var d map[string]interface{}
+
+	gy.Unmarshal([]byte(yfile), &d)
+
+	s := d["spec"]
+	if s, ok := s.(map[interface{}]interface{}); ok {
+		sel := s["selector"]
+		log.Printf("h1: %+v", sel)
+		if sel, ok := sel.(map[interface{}]interface{}); ok {
+			m := sel["matchLabels"]
+			log.Printf("h2: %+v", m)
+			if m, ok := m.(map[interface{}]interface{}); ok {
+				m["xxx"] = 1234214
+			}
+		}
+	}
+
+	log.Printf("h3: %+v", d)
 
 }
