@@ -14,3 +14,10 @@ func ReadFile_(filename string) []byte {
 
 	return data
 }
+
+// 写小文件
+func WriteFile_(filename string, data string) {
+	if err := ioutil.WriteFile(filename, []byte(data), 0777); err != nil {
+		panic(err)
+	}
+}

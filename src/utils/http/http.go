@@ -105,6 +105,8 @@ func Unpack(req *http.Request, ptr interface{}) error {
 		return err
 	}
 
+	log.Printf("[HTTP Request]:\n%+v", req.Form)
+
 	// 临时存储 struct 里的数据
 	fields := make(map[string]reflect.Value)
 
