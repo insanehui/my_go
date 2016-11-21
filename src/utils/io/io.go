@@ -3,7 +3,22 @@ package io
 import (
 	"io/ioutil"
 	"log"
+	"os"
 )
+
+// 判断文件是否存在
+func Exists(p string) bool {
+	_, err := os.Stat(p)
+	return err == nil || os.IsExist(err) // 不明白这个IsExist是干什么的？
+}
+
+// 判断文件是否存在
+func Exists_(p string) {
+	_, err := os.Stat(p)
+	if  err == nil || os.IsExist(err) {
+		panic( p + " not exists")
+	}
+}
 
 func ReadFile_(filename string) []byte {
 	data, err := ioutil.ReadFile(filename)
