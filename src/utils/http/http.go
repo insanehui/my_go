@@ -16,7 +16,7 @@ import (
 
 func log_client(r *http.Request)  {
 	log.Printf("<<<<<<<<<<<<<<<< %+v <<<<<<<<<<<<<<<<<<<", r.RemoteAddr)
-	// log.Printf("[%+v]", r.RequestURI) // 跟URL有什么区别？
+	// log.Printf("[%+v]", r.RequestURI)
 	log.Printf("[%+v]", r.URL)
 }
 
@@ -137,7 +137,8 @@ func Unpack(req *http.Request, ptr interface{}) error {
 	// 遍历请求的参数
 	for name, values := range req.Form {
 
-		f := fields[name] // 取到当前参数对应的field字段
+		// f为当前字段的rv
+		f := fields[name] 
 
 		if !f.IsValid() {
 			continue
@@ -146,12 +147,17 @@ func Unpack(req *http.Request, ptr interface{}) error {
 		for _, value := range values {
 			if f.Kind() == reflect.Slice { // 如果是数组类型，则拼成数组
 
-				elem := reflect.New(f.Type().Elem()).Elem() // 这里有点晦涩啊...
+				// new一个其元素对应的rv类型
+				elem := reflect.New(f.Type().Elem()).Elem() 
 
+				// 将value（string）填到elem
 				if err := populate(elem, value); err != nil {
 					return fmt.Errorf("%s: %v", name, err)
 				}
+
+				// reflect世界里的append
 				f.Set(reflect.Append(f, elem))
+
 			} else { // 否则，后面值将前面的覆盖
 				if err := populate(f, value); err != nil {
 					return fmt.Errorf("%s: %v", name, err)
