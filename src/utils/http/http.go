@@ -14,6 +14,12 @@ import (
 	"github.com/serenize/snaker"
 )
 
+func log_client(r *http.Request)  {
+	log.Printf("<<<<<<<<<<<<<<<< %+v <<<<<<<<<<<<<<<<<<<", r.RemoteAddr)
+	// log.Printf("[%+v]", r.RequestURI) // 跟URL有什么区别？
+	log.Printf("[%+v]", r.URL)
+}
+
 type IRetJson interface {
 	FromPanic(interface{})
 }
@@ -34,6 +40,8 @@ type IRetJson interface {
 // 	
 // }
 func JsonDo(w http.ResponseWriter, r *http.Request, para interface{}, ret IRetJson, fn func()) {
+
+	log_client(r)
 
 	defer func() {
 		p := recover()
@@ -65,6 +73,7 @@ func JsonDo(w http.ResponseWriter, r *http.Request, para interface{}, ret IRetJs
 // 	
 // }
 func Do(w http.ResponseWriter, r *http.Request, para interface{}, ret interface{}, fn func(), end func(p interface{})) {
+	log_client(r)
 
 	defer func() {
 		p := recover()
@@ -105,7 +114,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 		return err
 	}
 
-	log.Printf("[HTTP Request]:\n%+v", req.Form)
+	log.Printf("[Client Form:]:\n%+v", req.Form)
 
 	// 临时存储 struct 里的数据
 	fields := make(map[string]reflect.Value)
