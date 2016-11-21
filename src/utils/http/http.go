@@ -96,7 +96,7 @@ func WriteJson(w http.ResponseWriter, data interface{}) {
 	w.Write(ret)
 }
 
-// 将http请求解析到结构体中
+// 将http请求解析到结构体中. 使用tag: http
 // 代码摘自《go语言圣经》 ch12/params
 func Unpack(req *http.Request, ptr interface{}) error {
 
