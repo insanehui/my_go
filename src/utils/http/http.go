@@ -105,7 +105,7 @@ func WriteJson(w http.ResponseWriter, data interface{}) {
 	w.Write(ret)
 }
 
-// 将http请求解析到结构体中. 使用tag: http
+// 将http请求解析到结构体中. 使用tag: http, def
 // 代码摘自《go语言圣经》 ch12/params
 func Unpack(req *http.Request, ptr interface{}) error {
 
@@ -131,7 +131,15 @@ func Unpack(req *http.Request, ptr interface{}) error {
 			//			name = strings.ToLower(fieldInfo.Name)
 			name = snaker.CamelToSnake(fieldInfo.Name) // 转为snaker形式的name
 		}
-		fields[name] = v.Field(i) // 存到map里的是rv（reflect.Value）
+
+		f := v.Field(i)
+		fields[name] = f // 存到map里的是rv（reflect.Value）
+
+		// 先填缺省值
+		def := tag.Get("def")
+		if def != "" {
+			populate(f, def)
+		}
 	}
 
 	// 遍历请求的参数
@@ -139,7 +147,6 @@ func Unpack(req *http.Request, ptr interface{}) error {
 
 		// f为当前字段的rv
 		f := fields[name] 
-
 		if !f.IsValid() {
 			continue
 		}
