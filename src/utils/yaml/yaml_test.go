@@ -120,3 +120,31 @@ spec:
 	log.Printf("h3: %+v", d)
 
 }
+
+func Test_ok(t *testing.T) {
+	{
+		yfile := `
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+name: db2
+namespace: linksame-simplest
+spec:
+accessModes:
+- ReadWriteMany
+resources:
+requests:
+storage: 5Gi
+selector:
+matchLabels:
+name: "db
+		`
+		log.Println(Ok(yfile))
+	}
+
+	{
+		yfile := "" // 空字符串，也算是合法的yaml
+		log.Println(Ok(yfile))
+	}
+
+}

@@ -39,3 +39,10 @@ func FromFileTo_(filename string, to interface{}) {
 		log.Panicf("yaml.FromFileTo err: %+v", err.Error())
 	}
 }
+
+// 检查是否为yaml
+func Ok(data string) bool {
+	var i interface{}
+	err := yaml.Unmarshal([]byte(data), &i)
+	return err == nil
+}
