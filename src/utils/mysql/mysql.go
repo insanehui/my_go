@@ -35,6 +35,9 @@ func Open(a string, b string) (*DB, error) {
 	return db, err
 }
 
+// 示例：
+// 格式：用户名:密码@地址/默认数据库?其他设置
+// db = Mysql.Open_("mysql", "blueprint:ctg123@tcp(10.10.12.2:3306)/blueprint?charset=utf8")
 func Open_(a string, b string) *DB {
 
 	db, err := Open(a, b)
