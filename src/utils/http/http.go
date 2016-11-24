@@ -2,19 +2,22 @@
 package http
 
 import (
-	rt "utils/runtime"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strconv"
+	rt "utils/runtime"
+	U "utils"
 
 	V "github.com/asaskevich/govalidator"
 	"github.com/serenize/snaker"
 )
 
-func log_client(r *http.Request)  {
+func log_client(r *http.Request) {
 	log.Printf("<<<<<<<<<<<<<<<< %+v <<<<<<<<<<<<<<<<<<<", r.RemoteAddr)
 	// log.Printf("[%+v]", r.RequestURI)
 	log.Printf("[%+v]", r.URL)
@@ -37,7 +40,7 @@ type IRetJson interface {
 //	JsonDo(w, r, &para, &ret, func(){
 //		// 处理para和ret
 //	})
-// 	
+//
 // }
 func JsonDo(w http.ResponseWriter, r *http.Request, para interface{}, ret IRetJson, fn func()) {
 
@@ -70,7 +73,7 @@ func JsonDo(w http.ResponseWriter, r *http.Request, para interface{}, ret IRetJs
 //		// 处理panic
 //		// 返回http回应
 //	})
-// 	
+//
 // }
 func Do(w http.ResponseWriter, r *http.Request, para interface{}, ret interface{}, fn func(), end func(p interface{})) {
 	log_client(r)
@@ -146,7 +149,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 	for name, values := range req.Form {
 
 		// f为当前字段的rv
-		f := fields[name] 
+		f := fields[name]
 		if !f.IsValid() {
 			continue
 		}
@@ -155,7 +158,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 			if f.Kind() == reflect.Slice { // 如果是数组类型，则拼成数组
 
 				// new一个其元素对应的rv类型
-				elem := reflect.New(f.Type().Elem()).Elem() 
+				elem := reflect.New(f.Type().Elem()).Elem()
 
 				// 将value（string）填到elem
 				if err := populate(elem, value); err != nil {
@@ -234,4 +237,36 @@ func populate(v reflect.Value, value string) error {
 	return nil
 }
 
+// Post, 返回string
+func Post(site string, vals map[string]interface{}) (res string, err error) {
+	// TODO: 后续支持将struct作为参数传入
+
+	url_vals := toUrlVals(vals)
+
+	resp, err := http.PostForm(site, url_vals)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	res = string(body)
+	return
+}
+
+// map -> url.Values
+func toUrlVals(m map[string]interface{}) url.Values {
+	ret := make(url.Values)
+	for k, v := range m {
+		str := U.ToStr(v)
+		ss := []string{str}
+		ret[k] = ss
+	}
+	return ret
+}
 
