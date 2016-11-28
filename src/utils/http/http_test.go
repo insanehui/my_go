@@ -24,16 +24,17 @@ func Test_post(t *testing.T) {
 func Test_jsondo(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var para struct {
+		type Para struct {
 			Name string `valid:"-"`
 		}
+		para := Para{ "shit" }
 
 		var ret struct {
 			Err
 			Name string
 		}
 		JsonDo(w, r, &para, &ret, func() {
-			ret.Name = "haha"
+			ret.Name = para.Name
 		})
 	}))
 	defer ts.Close()

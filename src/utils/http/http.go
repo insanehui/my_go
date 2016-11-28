@@ -239,9 +239,10 @@ func populate(v reflect.Value, value string) error {
 }
 
 // Post, 返回string
-func Post(site string, vals map[string]interface{}) (res string, err error) {
-	// TODO: 后续支持将struct作为参数传入
+func Post(site string, i interface{}) (res string, err error) {
 
+	var vals map[string]interface{}
+	U.Conv(i, &vals)
 	url_vals := toUrlVals(vals)
 
 	resp, err := http.PostForm(site, url_vals)
