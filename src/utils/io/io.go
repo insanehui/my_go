@@ -1,6 +1,8 @@
 package io
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,8 +17,8 @@ func Exists(p string) bool {
 // 判断文件是否存在
 func Exists_(p string) {
 	_, err := os.Stat(p)
-	if  err == nil || os.IsExist(err) {
-		panic( p + " not exists")
+	if err == nil || os.IsExist(err) {
+		panic(p + " not exists")
 	}
 }
 
@@ -35,4 +37,22 @@ func WriteFile_(filename string, data string) {
 	if err := ioutil.WriteFile(filename, []byte(data), 0777); err != nil {
 		panic(err)
 	}
+}
+
+// 尝试用小写的结构，意图是用户不需要显式声明该结构
+type logWriter struct {
+	w io.Writer
+}
+
+func (me *logWriter) Write(p []byte) (int, error) {
+	// 输出到 stdout
+	fmt.Printf("%s", p)
+
+	// 透传 w 的方法
+	return me.w.Write(p)
+}
+
+// 构造logWriter
+func LogWriter(w io.Writer) *logWriter {
+	return &logWriter{w}
 }
