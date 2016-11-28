@@ -34,6 +34,7 @@ type IRetJson interface {
 // 		// ...
 // 	}
 //	var ret struct {
+//      // 要实现 FromPanic(interface{}) 方法, 即IRetJson
 //		// ...
 //	}
 //	JsonDo(w, r, &para, &ret, func(){
