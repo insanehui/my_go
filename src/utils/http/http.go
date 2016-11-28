@@ -19,8 +19,7 @@ import (
 
 func log_client(r *http.Request) {
 	log.Printf("<<<<<<<<<<<<<<<< %+v <<<<<<<<<<<<<<<<<<<", r.RemoteAddr)
-	// log.Printf("[%+v]", r.RequestURI)
-	log.Printf("[%+v]", r.URL)
+	log.Printf("%s [%+v]", r.Method, r.URL)
 }
 
 type IRetJson interface {
@@ -110,6 +109,7 @@ func WriteJson(w http.ResponseWriter, data interface{}) {
 
 // 将http请求解析到结构体中. 使用tag: http, def
 // 代码摘自《go语言圣经》 ch12/params
+// TODO: 这里要不要改成抛异常？
 func Unpack(req *http.Request, ptr interface{}) error {
 
 	// 将输入参数解析到 req.Form 对象里
