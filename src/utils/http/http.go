@@ -57,6 +57,28 @@ func JsonDo(w http.ResponseWriter, r *http.Request, para interface{}, ret IRetJs
 	fn()
 }
 
+/*
+// 这原本是json do的另一个设计思路，但事实上验证这是一次失败的尝试，见下面注释：
+
+func JDo(w http.ResponseWriter, r *http.Request, para interface{}, fn func() IRetJson) {
+
+	log_client(r)
+
+	var ret IRetJson
+
+	defer func() {
+		p := recover()
+		rt.Log(p)
+		ret.FromPanic(p) // 这里其实没法执行FromPanic方法
+		WriteJson(w, ret)
+	}()
+
+	Checkout_(r, para) 
+	ret = fn()
+}
+*/
+
+
 // 与JsonDo类似，但更通用（不一定返回json）
 // end(p) 将在 defer里执行, 参数p 为panic
 // 使用示例:
