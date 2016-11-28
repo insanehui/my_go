@@ -12,6 +12,7 @@ import (
 	"strconv"
 	rt "utils/runtime"
 	U "utils"
+	I "utils/io"
 
 	V "github.com/asaskevich/govalidator"
 	"github.com/serenize/snaker"
@@ -127,7 +128,9 @@ func Plain(w http.ResponseWriter) {
 func WriteJson(w http.ResponseWriter, data interface{}) {
 	Json(w)
 	ret, _ := json.MarshalIndent(data, "", "    ")
-	w.Write(ret)
+	log.Println(">>>>>>>>>>>>>> Return JSON: >>>>>>>>>>>>>>")
+	I.LogWriter(w).Write(ret)
+	fmt.Println()
 }
 
 // 将http请求解析到结构体中. 使用tag: http, def
