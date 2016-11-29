@@ -27,6 +27,7 @@ func Test_jsondo(t *testing.T) {
 		Name string `valid:"-"`
 	}
 
+	// TODO: 下次再用到这个 httptest，将该函数再包装一下
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var p Para
 
