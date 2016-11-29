@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	_ "utils/log/stdout"
 )
 
 func Test_map2urlvals(t *testing.T) {
