@@ -45,3 +45,7 @@ func Test_jsondo(t *testing.T) {
 	log.Println("client get: ", res)
 
 }
+
+func Test_file_svr(t *testing.T) {
+	log.Fatal(http.ListenAndServe(":80", http.FileServer(http.Dir("C:\\Users\\guanghui\\Desktop\\test"))))
+}
