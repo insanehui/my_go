@@ -67,7 +67,7 @@ func KeyStrs(m interface{}) []string {
 	return ret
 }
 
-// 通用的对象转换，依赖标准json库作中转对象
+// 通用的对象转换，依赖标准json库作中转对象. 注：to一定要传指针
 func Conv(from interface{}, to interface{}) error {
 	j, err := json.Marshal(from)
 	if err != nil {
