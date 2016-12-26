@@ -154,7 +154,8 @@ func (me *DB) Update(table string, data interface{}, keys ...interface{}) int64 
 	q += strings.Join(conExprs, " and ")
 
 	paras := append(vals, conVals...)
-	return me.Exec(q, paras...)
+	rows, _ := me.Exec(q, paras...)
+	return rows
 
 }
 
@@ -169,7 +170,7 @@ func (me *DB) Set(table string, data interface{}, keys ...interface{}) int64 {
 
 // ==============================================================================
 
-// 内部insert函数
+// 内部insert函数，返回的是last insert_id
 func (me *DB) insert(table string, data interface{}, replace bool) int64 {
 	var op string
 	if replace {
@@ -181,20 +182,21 @@ func (me *DB) insert(table string, data interface{}, replace bool) int64 {
 	exprs, vals := parseKey(data)
 	q += strings.Join(exprs, ",")
 
-	return me.Exec(q, vals...)
+	_, last_id := me.Exec(q, vals...)
+	return last_id
 }
 
-func (me *DB) Exec(q string, args ...interface{}) int64 {
+func (me *DB) Exec(q string, args ...interface{}) (int64, int64) {
 	db := me.d
 	var err error
 	var res sql.Result
-	var ret int64
 	log.Printf("sql: %s, args: %+v", q, args)
 	res, err = db.Exec(q, args...)
 	checkErr(err)
-	ret, err = res.RowsAffected()
+	rows, err := res.RowsAffected()
 	checkErr(err)
-	return ret
+	last_id, err := res.LastInsertId()
+	return rows, last_id
 }
 
 func parseKey(_d interface{}, keys ...interface{}) ([]string, []interface{}) {
