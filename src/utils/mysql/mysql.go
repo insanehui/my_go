@@ -94,6 +94,16 @@ func (me *DB) Query(stmtStr string, paras ...interface{}) Res {
 	return res
 }
 
+// 查询一行
+func (me *DB) QueryRow(stmtStr string, paras ...interface{}) Row {
+	res := me.Query(stmtStr, paras...)
+	if len(res) > 0 {
+		return res[0]
+	} else {
+		return nil
+	}
+}
+
 // 查询单个值
 func (me *DB) QryValue(q string, paras ...interface{}) interface{} {
 	db := me.d
