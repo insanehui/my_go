@@ -109,8 +109,13 @@ func (me *DB) QryValue(q string, paras ...interface{}) interface{} {
 	db := me.d
 	row := db.QueryRow(q, paras...)
 	var ret interface{}
-	row.Scan(&ret)
-	return value(ret)
+	err := row.Scan(&ret)
+	if err != nil {
+		log.Printf("mysql QryValue error: %+v", err)
+		return nil
+	} else {
+		return value(ret)
+	}
 }
 
 // 查询int值
