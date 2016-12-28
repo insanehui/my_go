@@ -287,6 +287,15 @@ func Post(site string, i interface{}) (res string, err error) {
 	return
 }
 
+func Post_(site string, i interface{}) (res string){
+	res, err := Post(site, i)
+	if err != nil {
+		panic(err)
+	}
+	return
+}
+
+
 // map -> url.Values
 func toUrlVals(m map[string]interface{}) url.Values {
 	ret := make(url.Values)
@@ -296,5 +305,12 @@ func toUrlVals(m map[string]interface{}) url.Values {
 		ret[k] = ss
 	}
 	return ret
+}
+
+// 转url.Values对外版
+func ToUrlVals(i interface{}) url.Values {
+	var vals map[string]interface{}
+	U.Conv(i, &vals)
+	return toUrlVals(vals)
 }
 
