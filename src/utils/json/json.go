@@ -176,13 +176,17 @@ func JsonGroup(o jres, by []string, opt ...string) Obj {
 
 // JsonGroup的替代
 func Group(o interface{}, by []string, opt ...string) Obj {
+	// opt支持 "obj", "nostrip"
 
 	ret := make(Obj)
 	is_nostrip := false
+	is_obj := false
 
 	for _, op := range opt {
 		if op == "nostrip" {
 			is_nostrip = true
+		} else if op == "obj" {
+			is_obj = true
 		}
 	}
 
@@ -219,7 +223,11 @@ func Group(o interface{}, by []string, opt ...string) Obj {
 					} else {
 						leaf = Omit(item, by)
 					}
-					prev[val] = Append(prev[val], leaf)
+					if is_obj {
+						prev[val] = leaf
+					} else {
+						prev[val] = Append(prev[val], leaf)
+					}
 				}
 			}
 
