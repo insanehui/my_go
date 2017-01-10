@@ -30,6 +30,7 @@ func ToStr(s interface{}) string {
 	return fmt.Sprintf("%+v", s)
 }
 
+// 取map的keys
 func Keys(m interface{}) []interface{} {
 	var ret []interface{}
 
