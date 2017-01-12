@@ -53,6 +53,7 @@ func (me *DB) Query(stmtStr string, paras ...interface{}) Res {
 	var res Res
 	db := me.d
 
+	log.Printf("sql query: %s, args: %+v", stmtStr, paras)
 	rows, err := db.Query(stmtStr, paras...)
 
 	if err != nil {
