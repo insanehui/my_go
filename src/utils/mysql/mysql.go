@@ -82,7 +82,7 @@ func (me *DB) Query(stmtStr string, paras ...interface{}) Res {
 		}
 
 		// scan只接受指针
-		rows.Scan(valuePtrs...)
+		rows.Scan(valuePtrs...) // 对mysql里的null值，得到的是值为nil的interface
 		row := make(Row)
 
 		for i, col := range columns {
