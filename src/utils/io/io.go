@@ -56,3 +56,24 @@ func (me *logWriter) Write(p []byte) (int, error) {
 func LogWriter(w io.Writer) *logWriter {
 	return &logWriter{w}
 }
+
+// io系列
+// 根据分隔符读取，暂时只支持一个字节
+func ReadBy(r io.Reader, b []byte, sep string) (n int, err error) {
+	l := len(b)
+	if l < 1 {
+		return 0, io.ErrShortBuffer
+	}
+
+	for n < l && err == nil {
+		var c int
+		c, err = r.Read(b[n : n+1])
+		n += c
+
+		if string(b[n-1:n]) == sep {
+			return
+		}
+	}
+	return
+}
+

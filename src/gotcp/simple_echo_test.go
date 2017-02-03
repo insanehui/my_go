@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	u "utils"
+	I "utils/io"
 )
 
 // =============== 结构体声明 =======================
@@ -29,7 +29,7 @@ func (this *TheSvr) ReadPacket(conn *net.TCPConn) (Packet, error) {
 	b := make([]byte, 100)
 	p := MyPacket{}
 	// n, err := io.ReadAtLeast(conn, b, 10)
-	n, err := u.ReadBy(conn, b, "\n")
+	n, err := I.ReadBy(conn, b, "\n")
 
 	if err != nil {
 		return nil, err
